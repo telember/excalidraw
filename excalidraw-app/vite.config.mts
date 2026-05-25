@@ -149,6 +149,11 @@ export default defineConfig(({ mode }) => {
       ViteEjsPlugin(),
       VitePWA({
         registerType: "autoUpdate",
+        // Self-host doesn't need PWA. selfDestroying makes the generated
+        // sw.js unregister itself + clear its caches on next page load,
+        // so users who have an old SW installed automatically recover
+        // without manually clearing site data.
+        selfDestroying: true,
         devOptions: {
           /* set this flag to true to enable in Development mode */
           enabled: envVars.VITE_APP_ENABLE_PWA === "true",
