@@ -1,0 +1,256 @@
+.excalidraw-workspace-tabbar {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  max-width: calc(100vw - 280px);
+  overflow-x: auto;
+  padding: 4px 0;
+  scrollbar-width: thin;
+}
+
+.excalidraw-workspace-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 8px 0 10px;
+  border-radius: 6px;
+  background: var(--island-bg-color, #f1f0ff);
+  color: var(--text-primary-color, #1b1b1f);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid transparent;
+  max-width: 200px;
+
+  &:hover {
+    border-color: var(--color-primary-light, #b2adff);
+  }
+
+  &.is-active {
+    background: var(--color-primary-light, #b2adff);
+    color: var(--color-primary-darkest, #1b1163);
+    border-color: var(--color-primary, #6965db);
+  }
+}
+
+.excalidraw-workspace-tab-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
+}
+
+.excalidraw-workspace-tab-close {
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+  border-radius: 4px;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+}
+
+.excalidraw-workspace-tab-new {
+  border: 1px dashed var(--color-primary-light, #b2adff);
+  background: transparent;
+  color: var(--color-primary, #6965db);
+  cursor: pointer;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  line-height: 1;
+
+  &:hover {
+    background: var(--island-bg-color, #f1f0ff);
+  }
+}
+
+// Sidebar panel
+.excalidraw-workspace-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 8px 4px;
+  font-size: 13px;
+  color: var(--text-primary-color, #1b1b1f);
+}
+
+.excalidraw-workspace-toolbar {
+  display: flex;
+  gap: 6px;
+  padding: 0 4px 8px;
+
+  button {
+    flex: 1;
+    height: 28px;
+    border: 1px solid var(--color-primary-light, #b2adff);
+    background: transparent;
+    color: var(--color-primary, #6965db);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+
+    &:hover {
+      background: var(--island-bg-color, #f1f0ff);
+    }
+  }
+}
+
+.excalidraw-workspace-tree {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.excalidraw-workspace-folder-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 4px;
+  font-weight: 600;
+}
+
+.excalidraw-workspace-folder-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  padding: 2px 4px;
+  border-radius: 4px;
+
+  &:hover {
+    background: var(--island-bg-color, #f1f0ff);
+  }
+}
+
+.excalidraw-workspace-folder-icon,
+.excalidraw-workspace-row-icon {
+  font-size: 14px;
+}
+
+.excalidraw-workspace-folder-body {
+  padding-left: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.excalidraw-workspace-row {
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  position: relative;
+
+  &:hover {
+    background: var(--island-bg-color, #f1f0ff);
+  }
+
+  &.is-active {
+    background: var(--color-primary-light, #b2adff);
+  }
+}
+
+.excalidraw-workspace-row-label {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  padding: 4px 6px;
+  overflow: hidden;
+}
+
+.excalidraw-workspace-row-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.excalidraw-workspace-row-menu-wrap {
+  position: relative;
+}
+
+.excalidraw-workspace-row-menu-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  color: inherit;
+  border-radius: 4px;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.08);
+  }
+}
+
+.excalidraw-workspace-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 10;
+  min-width: 160px;
+  background: var(--popup-bg-color, #fff);
+  color: var(--text-primary-color, #1b1b1f);
+  border: 1px solid var(--default-border-color, #e0dfff);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+
+  button {
+    background: transparent;
+    border: none;
+    text-align: left;
+    padding: 6px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    color: inherit;
+    font: inherit;
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    &:not(:disabled):hover {
+      background: var(--island-bg-color, #f1f0ff);
+    }
+
+    &.is-danger {
+      color: var(--color-danger, #d94646);
+    }
+  }
+}
+
+.excalidraw-workspace-menu-sep {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--text-secondary-color, #7a7a85);
+  padding: 6px 8px 2px;
+}
+
+.excalidraw-workspace-empty {
+  padding: 6px 10px;
+  color: var(--text-secondary-color, #7a7a85);
+  font-style: italic;
+}
