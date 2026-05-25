@@ -148,7 +148,13 @@ import "./index.scss";
 
 import { ExcalidrawPlusPromoBanner } from "./components/ExcalidrawPlusPromoBanner";
 import { AppSidebar } from "./components/AppSidebar";
-import { TabBar, useWorkspace, useWorkspaceShortcuts } from "./workspace";
+import {
+  Dashboard,
+  TabBar,
+  useRoute,
+  useWorkspace,
+  useWorkspaceShortcuts,
+} from "./workspace";
 
 import type { CollabAPI } from "./collab/Collab";
 
@@ -377,6 +383,7 @@ const ExcalidrawWrapper = () => {
   const excalidrawAPI = useExcalidrawAPI();
   const workspace = useWorkspace(excalidrawAPI);
   useWorkspaceShortcuts(workspace);
+  const [route, navigate] = useRoute();
 
   const [errorMessage, setErrorMessage] = useState("");
   const isCollabDisabled = isRunningInIframe();
@@ -916,6 +923,9 @@ const ExcalidrawWrapper = () => {
         "is-collaborating": isCollaborating,
       })}
     >
+      {workspace && route.kind !== "editor" && (
+        <Dashboard workspace={workspace} route={route} navigate={navigate} />
+      )}
       {workspace && <TabBar workspace={workspace} />}
       <Excalidraw
         onChange={onChange}
@@ -999,6 +1009,7 @@ const ExcalidrawWrapper = () => {
           theme={appTheme}
           setTheme={(theme) => setAppTheme(theme)}
           refresh={() => forceRefresh((prev) => !prev)}
+          onOpenDashboard={() => navigate({ kind: "dashboard" })}
           onOpenWorkspace={
             workspace && excalidrawAPI
               ? () =>

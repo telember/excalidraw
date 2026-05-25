@@ -359,10 +359,12 @@ export const WorkspacePanel = ({ workspace }: Props) => {
 
   const grouped = useMemo(() => {
     const q = filter.trim().toLowerCase();
-    const allScenes = Object.values(workspace.state.scenes);
+    const activeScenes = Object.values(workspace.state.scenes).filter(
+      (s) => !s.deletedAt,
+    );
     const matching = q
-      ? allScenes.filter((s) => s.name.toLowerCase().includes(q))
-      : allScenes;
+      ? activeScenes.filter((s) => s.name.toLowerCase().includes(q))
+      : activeScenes;
     return groupScenesByFolder(
       matching,
       orderedFolders.map((f) => f.id),

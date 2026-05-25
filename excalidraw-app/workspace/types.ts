@@ -26,6 +26,10 @@ export type WorkspaceScene = {
   appState: PersistedSceneAppState;
   createdAt: number;
   updatedAt: number;
+  /** Set whenever the scene is opened in the editor. */
+  lastVisitedAt?: number;
+  /** Soft-delete timestamp. Scenes with this set are in Trash. */
+  deletedAt?: number;
 };
 
 export type WorkspaceFolder = {

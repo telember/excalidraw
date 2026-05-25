@@ -3,6 +3,7 @@ import {
   ExcalLogo,
   eyeIcon,
   LibraryIcon,
+  gridIcon,
 } from "@excalidraw/excalidraw/components/icons";
 import { MainMenu } from "@excalidraw/excalidraw/index";
 import React from "react";
@@ -24,9 +25,15 @@ export const AppMainMenu: React.FC<{
   setTheme: (theme: Theme | "system") => void;
   refresh: () => void;
   onOpenWorkspace?: () => void;
+  onOpenDashboard?: () => void;
 }> = React.memo((props) => {
   return (
     <MainMenu>
+      {props.onOpenDashboard && (
+        <MainMenu.Item icon={gridIcon} onSelect={props.onOpenDashboard}>
+          Dashboard
+        </MainMenu.Item>
+      )}
       {props.onOpenWorkspace && (
         <MainMenu.Item icon={LibraryIcon} onSelect={props.onOpenWorkspace}>
           Workspace

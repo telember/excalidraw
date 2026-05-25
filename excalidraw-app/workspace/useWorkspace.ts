@@ -124,7 +124,12 @@ export type WorkspaceAPI = {
   closeTab: (id: SceneId) => void;
   createScene: (folderId?: FolderId, name?: string) => SceneId;
   renameScene: (id: SceneId, name: string) => void;
+  /** Soft-delete: marks the scene as in Trash. Use purgeScene to remove. */
   deleteScene: (id: SceneId) => void;
+  /** Bring a scene back from trash. */
+  restoreScene: (id: SceneId) => void;
+  /** Hard-delete: permanently removes a scene. */
+  purgeScene: (id: SceneId) => void;
   duplicateScene: (id: SceneId) => SceneId | null;
   moveScene: (id: SceneId, folderId: FolderId) => void;
   reorderTabs: (sourceId: SceneId, targetId: SceneId | null) => void;
@@ -282,12 +287,24 @@ export const useWorkspace = (
       if (!current || !current.scenes[id]) {
         return;
       }
+      const scene = current.scenes[id];
       const openTabs = current.openTabs.includes(id)
         ? current.openTabs
         : [...current.openTabs, id];
-      const next: WorkspaceState = { ...current, openTabs, activeTab: id };
+      const visited: WorkspaceScene = {
+        ...scene,
+        lastVisitedAt: Date.now(),
+        // Opening a scene resurrects it from trash.
+        deletedAt: undefined,
+      };
+      const next: WorkspaceState = {
+        ...current,
+        scenes: { ...current.scenes, [id]: visited },
+        openTabs,
+        activeTab: id,
+      };
       commit(next);
-      swapEditorTo(current.scenes[id]);
+      swapEditorTo(visited);
     },
     [commit, swapEditorTo],
   );
@@ -378,47 +395,87 @@ export const useWorkspace = (
       if (!current || !current.scenes[id]) {
         return;
       }
-      const { [id]: _removed, ...rest } = current.scenes;
+      const scene = current.scenes[id];
+      const deleted: WorkspaceScene = { ...scene, deletedAt: Date.now() };
       const openTabs = current.openTabs.filter((t) => t !== id);
       let activeTab = current.activeTab;
       if (activeTab === id) {
         activeTab = openTabs[0] ?? null;
       }
-      // Workspace must never be empty.
-      if (Object.keys(rest).length === 0) {
-        const scene = makeEmptyScene();
-        commit({
-          ...current,
-          scenes: { [scene.id]: scene },
-          openTabs: [scene.id],
-          activeTab: scene.id,
-        });
-        swapEditorTo(scene);
-        return;
-      }
-      // If no tabs remain open after delete, open the most-recently-updated scene.
+      const updatedScenes = { ...current.scenes, [id]: deleted };
+      // If no tabs remain, open the most-recently-updated *non-deleted* scene
+      // (or materialize a fresh Untitled if there are none).
       if (openTabs.length === 0) {
-        const mostRecent = Object.values(rest).sort(
+        const candidates = Object.values(updatedScenes).filter(
+          (s) => !s.deletedAt,
+        );
+        if (candidates.length === 0) {
+          const fresh = makeEmptyScene();
+          commit({
+            ...current,
+            scenes: { ...updatedScenes, [fresh.id]: fresh },
+            openTabs: [fresh.id],
+            activeTab: fresh.id,
+          });
+          swapEditorTo(fresh);
+          return;
+        }
+        const mostRecent = candidates.sort(
           (a, b) => b.updatedAt - a.updatedAt,
         )[0];
         commit({
           ...current,
-          scenes: rest,
+          scenes: updatedScenes,
           openTabs: [mostRecent.id],
           activeTab: mostRecent.id,
         });
         swapEditorTo(mostRecent);
         return;
       }
-      commit({ ...current, scenes: rest, openTabs, activeTab });
+      commit({ ...current, scenes: updatedScenes, openTabs, activeTab });
       if (activeTab && activeTab !== current.activeTab) {
-        const scene = rest[activeTab];
-        if (scene) {
-          swapEditorTo(scene);
+        const next = updatedScenes[activeTab];
+        if (next) {
+          swapEditorTo(next);
         }
       }
     },
     [commit, swapEditorTo],
+  );
+
+  const restoreScene = useCallback(
+    (id: SceneId) => {
+      const current = stateRef.current;
+      if (!current) {
+        return;
+      }
+      const scene = current.scenes[id];
+      if (!scene || !scene.deletedAt) {
+        return;
+      }
+      const { deletedAt: _, ...rest } = scene;
+      commit({
+        ...current,
+        scenes: { ...current.scenes, [id]: rest as WorkspaceScene },
+      });
+    },
+    [commit],
+  );
+
+  const purgeScene = useCallback(
+    (id: SceneId) => {
+      const current = stateRef.current;
+      if (!current || !current.scenes[id]) {
+        return;
+      }
+      const { [id]: _removed, ...rest } = current.scenes;
+      commit({
+        ...current,
+        scenes: rest,
+        openTabs: current.openTabs.filter((t) => t !== id),
+      });
+    },
+    [commit],
   );
 
   const duplicateScene = useCallback(
@@ -572,6 +629,8 @@ export const useWorkspace = (
     createScene,
     renameScene,
     deleteScene,
+    restoreScene,
+    purgeScene,
     duplicateScene,
     moveScene,
     reorderTabs,
