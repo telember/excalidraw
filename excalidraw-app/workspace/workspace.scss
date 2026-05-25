@@ -1,11 +1,23 @@
-.excalidraw-workspace-tabbar {
+.excalidraw-app {
+  position: relative;
+}
+
+.excalidraw-app .excalidraw-workspace-tabbar {
+  position: absolute;
+  // Clear of the hamburger main-menu (~48px button + breathing room).
+  top: 12px;
+  left: 64px;
+  // Stop short of the top-right collab/share cluster.
+  right: 200px;
   display: flex;
   align-items: stretch;
   gap: 4px;
-  max-width: calc(100vw - 280px);
   overflow-x: auto;
-  padding: 4px 0;
+  padding: 0 4px;
   scrollbar-width: thin;
+  // Above the canvas, below dialogs.
+  z-index: 5;
+  pointer-events: auto;
 }
 
 .excalidraw-workspace-tab {

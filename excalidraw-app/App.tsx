@@ -914,6 +914,7 @@ const ExcalidrawWrapper = () => {
         "is-collaborating": isCollaborating,
       })}
     >
+      {workspace && <TabBar workspace={workspace} />}
       <Excalidraw
         onChange={onChange}
         onExport={onExport}
@@ -958,9 +959,6 @@ const ExcalidrawWrapper = () => {
         handleKeyboardGlobally={true}
         autoFocus={true}
         theme={editorTheme}
-        renderTopLeftUI={() =>
-          workspace ? <TabBar workspace={workspace} /> : null
-        }
         renderTopRightUI={(isMobile) => {
           if (isMobile || !collabAPI || isCollabDisabled) {
             return null;
