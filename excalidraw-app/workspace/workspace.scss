@@ -353,7 +353,8 @@
   background: var(--island-bg-color, #fafafa);
   color: var(--text-primary-color, #1b1b1f);
   font-size: 14px;
-  z-index: 100;
+  // Above all editor chrome (Excalidraw's library/main-menu sit at 110/120).
+  z-index: 9999;
 }
 
 .excalidraw-dashboard-sidebar {
