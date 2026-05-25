@@ -147,6 +147,7 @@ import "./index.scss";
 
 import { ExcalidrawPlusPromoBanner } from "./components/ExcalidrawPlusPromoBanner";
 import { AppSidebar } from "./components/AppSidebar";
+import { TabBar, useWorkspace } from "./workspace";
 
 import type { CollabAPI } from "./collab/Collab";
 
@@ -373,6 +374,7 @@ const initializeScene = async (opts: {
 
 const ExcalidrawWrapper = () => {
   const excalidrawAPI = useExcalidrawAPI();
+  const workspace = useWorkspace(excalidrawAPI);
 
   const [errorMessage, setErrorMessage] = useState("");
   const isCollabDisabled = isRunningInIframe();
@@ -684,6 +686,10 @@ const ExcalidrawWrapper = () => {
       collabAPI.syncElements(elements);
     }
 
+    // Mirror the active scene into the workspace store. Ref-only update —
+    // no React render until the next structural change (tab switch, etc.).
+    workspace?.captureFromEditor(elements, appState);
+
     // this check is redundant, but since this is a hot path, it's best
     // not to evaludate the nested expression every time
     if (!LocalData.isSavePaused()) {
@@ -952,6 +958,9 @@ const ExcalidrawWrapper = () => {
         handleKeyboardGlobally={true}
         autoFocus={true}
         theme={editorTheme}
+        renderTopLeftUI={() =>
+          workspace ? <TabBar workspace={workspace} /> : null
+        }
         renderTopRightUI={(isMobile) => {
           if (isMobile || !collabAPI || isCollabDisabled) {
             return null;
@@ -1057,7 +1066,7 @@ const ExcalidrawWrapper = () => {
           }}
         />
 
-        <AppSidebar />
+        <AppSidebar workspace={workspace} />
 
         {errorMessage && (
           <ErrorDialog onClose={() => setErrorMessage("")}>

@@ -1,19 +1,36 @@
 import { DefaultSidebar, Sidebar, THEME } from "@excalidraw/excalidraw";
 import {
+  LibraryIcon,
   messageCircleIcon,
   presentationIcon,
 } from "@excalidraw/excalidraw/components/icons";
 import { LinkButton } from "@excalidraw/excalidraw/components/LinkButton";
 import { useUIAppState } from "@excalidraw/excalidraw/context/ui-appState";
 
+import { WorkspacePanel } from "../workspace/WorkspacePanel";
+
 import "./AppSidebar.scss";
 
-export const AppSidebar = () => {
+import type { WorkspaceAPI } from "../workspace";
+
+type Props = {
+  workspace: WorkspaceAPI | null;
+};
+
+export const AppSidebar = ({ workspace }: Props) => {
   const { theme, openSidebar } = useUIAppState();
 
   return (
     <DefaultSidebar>
       <DefaultSidebar.TabTriggers>
+        {workspace && (
+          <Sidebar.TabTrigger
+            tab="workspace"
+            style={{ opacity: openSidebar?.tab === "workspace" ? 1 : 0.4 }}
+          >
+            {LibraryIcon}
+          </Sidebar.TabTrigger>
+        )}
         <Sidebar.TabTrigger
           tab="comments"
           style={{ opacity: openSidebar?.tab === "comments" ? 1 : 0.4 }}
@@ -27,6 +44,11 @@ export const AppSidebar = () => {
           {presentationIcon}
         </Sidebar.TabTrigger>
       </DefaultSidebar.TabTriggers>
+      {workspace && (
+        <Sidebar.Tab tab="workspace">
+          <WorkspacePanel workspace={workspace} />
+        </Sidebar.Tab>
+      )}
       <Sidebar.Tab tab="comments">
         <div className="app-sidebar-promo-container">
           <div
