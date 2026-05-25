@@ -1,12 +1,12 @@
 import { DefaultSidebar, Sidebar, THEME } from "@excalidraw/excalidraw";
 import {
-  LibraryIcon,
   messageCircleIcon,
   presentationIcon,
 } from "@excalidraw/excalidraw/components/icons";
 import { LinkButton } from "@excalidraw/excalidraw/components/LinkButton";
 import { useUIAppState } from "@excalidraw/excalidraw/context/ui-appState";
 
+import { WorkspaceIcon } from "../workspace/icons";
 import { WorkspacePanel } from "../workspace/WorkspacePanel";
 
 import "./AppSidebar.scss";
@@ -26,9 +26,11 @@ export const AppSidebar = ({ workspace }: Props) => {
         {workspace && (
           <Sidebar.TabTrigger
             tab="workspace"
+            title="Workspace"
+            aria-label="Workspace"
             style={{ opacity: openSidebar?.tab === "workspace" ? 1 : 0.4 }}
           >
-            {LibraryIcon}
+            {WorkspaceIcon}
           </Sidebar.TabTrigger>
         )}
         <Sidebar.TabTrigger

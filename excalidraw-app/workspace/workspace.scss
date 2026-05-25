@@ -63,10 +63,39 @@
   line-height: 1;
   padding: 0 2px;
   border-radius: 4px;
+  // Hover-only by default; reveal on tab hover or active tab.
+  opacity: 0;
+  transition: opacity 80ms;
 
   &:hover {
     background: rgba(0, 0, 0, 0.1);
   }
+}
+
+.excalidraw-workspace-tab.is-active .excalidraw-workspace-tab-close,
+.excalidraw-workspace-tab:hover .excalidraw-workspace-tab-close {
+  opacity: 1;
+}
+
+.excalidraw-workspace-tab.is-editing {
+  padding-right: 4px;
+}
+
+.excalidraw-workspace-tab.is-drag-over {
+  outline: 2px solid var(--color-primary, #6965db);
+  outline-offset: -1px;
+}
+
+.excalidraw-workspace-tab-input {
+  font: inherit;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--color-primary, #6965db);
+  border-radius: 4px;
+  height: 22px;
+  padding: 0 4px;
+  width: 140px;
+  outline: none;
 }
 
 .excalidraw-workspace-tab-new {
@@ -116,9 +145,56 @@
   }
 }
 
+.excalidraw-workspace-search {
+  margin: 0 4px 8px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--default-border-color, #e0dfff);
+  border-radius: 6px;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  outline: none;
+
+  &:focus {
+    border-color: var(--color-primary, #6965db);
+  }
+}
+
 .excalidraw-workspace-tree {
   overflow-y: auto;
   flex: 1;
+}
+
+.excalidraw-workspace-row.is-dragging {
+  opacity: 0.4;
+}
+
+.excalidraw-workspace-folder-header.is-drop-target {
+  outline: 2px solid var(--color-primary, #6965db);
+  outline-offset: -2px;
+  border-radius: 4px;
+}
+
+.excalidraw-workspace-row-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  flex: 1;
+}
+
+.excalidraw-workspace-edit-input {
+  font: inherit;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--color-primary, #6965db);
+  border-radius: 4px;
+  height: 24px;
+  padding: 0 4px;
+  width: 100%;
+  min-width: 0;
+  outline: none;
 }
 
 .excalidraw-workspace-folder-header {

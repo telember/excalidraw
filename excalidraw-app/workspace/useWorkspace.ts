@@ -126,7 +126,9 @@ export type WorkspaceAPI = {
   createScene: (folderId?: FolderId, name?: string) => SceneId;
   renameScene: (id: SceneId, name: string) => void;
   deleteScene: (id: SceneId) => void;
+  duplicateScene: (id: SceneId) => SceneId | null;
   moveScene: (id: SceneId, folderId: FolderId) => void;
+  reorderTabs: (sourceId: SceneId, targetId: SceneId | null) => void;
   createFolder: (name: string) => string;
   renameFolder: (id: string, name: string) => void;
   deleteFolder: (id: string) => void;
@@ -416,6 +418,62 @@ export const useWorkspace = (
     [commit, swapEditorTo],
   );
 
+  const duplicateScene = useCallback(
+    (id: SceneId): SceneId | null => {
+      const current = stateRef.current;
+      if (!current) {
+        return null;
+      }
+      const src = current.scenes[id];
+      if (!src) {
+        return null;
+      }
+      const now = Date.now();
+      const copy: WorkspaceScene = {
+        ...src,
+        id: uuid(),
+        name: `${src.name} copy`,
+        createdAt: now,
+        updatedAt: now,
+        // Deep-clone elements so future edits don't mutate the source.
+        elements: JSON.parse(JSON.stringify(src.elements)),
+        appState: { ...src.appState },
+      };
+      commit({
+        ...current,
+        scenes: { ...current.scenes, [copy.id]: copy },
+        openTabs: [...current.openTabs, copy.id],
+        activeTab: copy.id,
+      });
+      swapEditorTo(copy);
+      return copy.id;
+    },
+    [commit, swapEditorTo],
+  );
+
+  const reorderTabs = useCallback(
+    (sourceId: SceneId, targetId: SceneId | null) => {
+      const current = stateRef.current;
+      if (!current) {
+        return;
+      }
+      const tabs = current.openTabs.filter((t) => t !== sourceId);
+      if (tabs.length === current.openTabs.length) {
+        return; // source not in openTabs
+      }
+      let insertAt = tabs.length;
+      if (targetId !== null) {
+        const idx = tabs.indexOf(targetId);
+        if (idx !== -1) {
+          insertAt = idx;
+        }
+      }
+      tabs.splice(insertAt, 0, sourceId);
+      commit({ ...current, openTabs: tabs });
+    },
+    [commit],
+  );
+
   const moveScene = useCallback(
     (id: SceneId, folderId: FolderId) => {
       const current = stateRef.current;
@@ -511,7 +569,9 @@ export const useWorkspace = (
     createScene,
     renameScene,
     deleteScene,
+    duplicateScene,
     moveScene,
+    reorderTabs,
     createFolder,
     renameFolder,
     deleteFolder,
