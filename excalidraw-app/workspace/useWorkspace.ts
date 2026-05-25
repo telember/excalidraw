@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CaptureUpdateAction } from "@excalidraw/excalidraw";
 import { getDefaultAppState } from "@excalidraw/excalidraw/appState";
-import { restoreAppState } from "@excalidraw/excalidraw/data/restore";
 
 import type { OrderedExcalidrawElement } from "@excalidraw/element/types";
 import type {
@@ -187,7 +186,10 @@ export const useWorkspace = (
       hydratedRef.current = false; // prevent re-run on every state change
       excalidrawAPI.updateScene({
         elements: active.elements,
-        appState: restoreAppState(active.appState, null),
+        // Pass our small persisted subset only. updateScene merges partial
+        // appState into the existing state, so openSidebar/zenMode/etc.
+        // are preserved across scene switches.
+        appState: active.appState as Pick<AppState, never>,
         captureUpdate: CaptureUpdateAction.NEVER,
       });
     }
@@ -250,7 +252,8 @@ export const useWorkspace = (
       }
       excalidrawAPI.updateScene({
         elements: scene.elements,
-        appState: restoreAppState(scene.appState, null),
+        // Partial merge — keeps openSidebar / zenMode / etc. across switches.
+        appState: scene.appState as Pick<AppState, never>,
         captureUpdate: CaptureUpdateAction.NEVER,
       });
     },
