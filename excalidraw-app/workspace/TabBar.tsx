@@ -138,7 +138,7 @@ export const TabBar = ({ workspace }: Props) => {
         type="button"
         className="excalidraw-workspace-tab-new"
         onClick={() => createScene(null)}
-        title="New scene (Ctrl+T)"
+        title="New scene (Alt+N)"
         aria-label="New scene"
         onDragOver={(e) => {
           if (dragId) {

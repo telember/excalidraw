@@ -410,7 +410,7 @@ export const WorkspacePanel = ({ workspace }: Props) => {
         <button
           type="button"
           onClick={() => workspace.createScene(null)}
-          title="New scene (Ctrl+T)"
+          title="New scene (Alt+N)"
         >
           + Scene
         </button>

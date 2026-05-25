@@ -148,7 +148,7 @@ import "./index.scss";
 
 import { ExcalidrawPlusPromoBanner } from "./components/ExcalidrawPlusPromoBanner";
 import { AppSidebar } from "./components/AppSidebar";
-import { TabBar, useWorkspace } from "./workspace";
+import { TabBar, useWorkspace, useWorkspaceShortcuts } from "./workspace";
 
 import type { CollabAPI } from "./collab/Collab";
 
@@ -376,6 +376,7 @@ const initializeScene = async (opts: {
 const ExcalidrawWrapper = () => {
   const excalidrawAPI = useExcalidrawAPI();
   const workspace = useWorkspace(excalidrawAPI);
+  useWorkspaceShortcuts(workspace);
 
   const [errorMessage, setErrorMessage] = useState("");
   const isCollabDisabled = isRunningInIframe();

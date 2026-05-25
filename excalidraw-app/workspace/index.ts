@@ -1,4 +1,5 @@
 export { useWorkspace } from "./useWorkspace";
+export { useWorkspaceShortcuts } from "./useWorkspaceShortcuts";
 export { WorkspaceIcon } from "./icons";
 export type { WorkspaceAPI } from "./useWorkspace";
 export { TabBar } from "./TabBar";
