@@ -191,6 +191,22 @@ export const useWorkspace = (
     }
   }, [excalidrawAPI, state]);
 
+  // Reflect the active scene name in document.title so you can see what
+  // you're editing from the browser tab / alt-tab / window list.
+  const activeName = state?.activeTab
+    ? state.scenes[state.activeTab]?.name
+    : null;
+  useEffect(() => {
+    if (!activeName) {
+      return;
+    }
+    const previous = document.title;
+    document.title = `${activeName} — Excalidraw`;
+    return () => {
+      document.title = previous;
+    };
+  }, [activeName]);
+
   const commit = useCallback((next: WorkspaceState) => {
     stateRef.current = next;
     setState(next);
