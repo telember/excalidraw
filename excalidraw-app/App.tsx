@@ -21,6 +21,7 @@ import { ShareableLinkDialog } from "@excalidraw/excalidraw/components/Shareable
 import Trans from "@excalidraw/excalidraw/components/Trans";
 import {
   APP_NAME,
+  DEFAULT_SIDEBAR,
   EVENT,
   THEME,
   VERSION_TIMEOUT,
@@ -997,6 +998,19 @@ const ExcalidrawWrapper = () => {
           theme={appTheme}
           setTheme={(theme) => setAppTheme(theme)}
           refresh={() => forceRefresh((prev) => !prev)}
+          onOpenWorkspace={
+            workspace && excalidrawAPI
+              ? () =>
+                  excalidrawAPI.updateScene({
+                    appState: {
+                      openSidebar: {
+                        name: DEFAULT_SIDEBAR.name,
+                        tab: "workspace",
+                      },
+                    },
+                  })
+              : undefined
+          }
         />
         <AppWelcomeScreen
           onCollabDialogOpen={onCollabDialogOpen}
