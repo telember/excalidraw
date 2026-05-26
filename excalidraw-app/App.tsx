@@ -150,7 +150,9 @@ import { ExcalidrawPlusPromoBanner } from "./components/ExcalidrawPlusPromoBanne
 import { AppSidebar } from "./components/AppSidebar";
 import {
   Dashboard,
+  QuickSearch,
   TabBar,
+  useActivity,
   useRoute,
   useWorkspace,
   useWorkspaceShortcuts,
@@ -381,9 +383,22 @@ const initializeScene = async (opts: {
 
 const ExcalidrawWrapper = () => {
   const excalidrawAPI = useExcalidrawAPI();
-  const workspace = useWorkspace(excalidrawAPI);
+  const activity = useActivity();
+  const workspace = useWorkspace(excalidrawAPI, activity.record);
   useWorkspaceShortcuts(workspace);
   const [route, navigate] = useRoute();
+  const [searchOpen, setSearchOpen] = useState(false);
+  // Toggle ⌘P / Ctrl+P for Quick Search.
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && (e.key === "p" || e.key === "P")) {
+        e.preventDefault();
+        setSearchOpen((o) => !o);
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
 
   const [errorMessage, setErrorMessage] = useState("");
   const isCollabDisabled = isRunningInIframe();
@@ -924,7 +939,32 @@ const ExcalidrawWrapper = () => {
       })}
     >
       {workspace && route.kind !== "editor" && (
-        <Dashboard workspace={workspace} route={route} navigate={navigate} />
+        <Dashboard
+          workspace={workspace}
+          route={route}
+          navigate={navigate}
+          onOpenSearch={() => setSearchOpen(true)}
+          events={activity.events}
+          isDark={appTheme === THEME.DARK}
+          onToggleTheme={() =>
+            setAppTheme(appTheme === THEME.DARK ? THEME.LIGHT : THEME.DARK)
+          }
+        />
+      )}
+      {workspace && (
+        <QuickSearch
+          open={searchOpen}
+          onClose={() => setSearchOpen(false)}
+          workspace={workspace}
+          onOpenScene={(id) => {
+            workspace.openScene(id);
+            navigate({ kind: "editor" });
+          }}
+          onStartDrawing={() => {
+            workspace.createScene(null);
+            navigate({ kind: "editor" });
+          }}
+        />
       )}
       {workspace && <TabBar workspace={workspace} />}
       <Excalidraw

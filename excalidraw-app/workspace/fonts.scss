@@ -1,0 +1,31 @@
+// Self-hosted DM Sans (variable font, latin subset).
+@font-face {
+  font-family: "DM Sans";
+  src: url("/fonts/dm-sans/DMSans-Variable.woff2") format("woff2-variations"),
+    url("/fonts/dm-sans/DMSans-Variable.woff2") format("woff2");
+  font-weight: 100 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Override Excalidraw's --ui-font with DM Sans so the editor chrome
+// (hamburger, toolbar, sidebars, dialogs) renders DM Sans. Canvas drawings
+// keep using Excalidraw's hand-drawn fonts (Virgil/Excalifont).
+.excalidraw {
+  --ui-font: "DM Sans", ui-sans-serif, system-ui, BlinkMacSystemFont,
+    -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+}
+
+.excalidraw-dashboard,
+.excalidraw-dashboard input,
+.excalidraw-dashboard button,
+.excalidraw-workspace-tabbar,
+.excalidraw-workspace-tab,
+.excalidraw-workspace-tab input,
+.excalidraw-workspace-tab button,
+.excalidraw-workspace-tab-new {
+  font-family: "DM Sans", ui-sans-serif, system-ui, BlinkMacSystemFont,
+    -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+}

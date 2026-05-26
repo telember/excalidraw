@@ -146,12 +146,34 @@ export type WorkspaceAPI = {
  * via onChange) only mutates the ref and schedules a debounced save — it does
  * NOT trigger a React update, so the editor stays smooth.
  */
+type RecordEvent = (
+  kind:
+    | "created"
+    | "renamed"
+    | "edited"
+    | "deleted"
+    | "restored"
+    | "duplicated"
+    | "moved",
+  sceneId: SceneId,
+  sceneName: string,
+  extra?: { oldName?: string; newName?: string; toFolderId?: string | null },
+) => void;
+
 export const useWorkspace = (
   excalidrawAPI: ExcalidrawImperativeAPI | null,
+  recordEvent?: RecordEvent,
 ): WorkspaceAPI | null => {
   const stateRef = useRef<WorkspaceState | null>(null);
   const [state, setState] = useState<WorkspaceState | null>(null);
   const hydratedRef = useRef(false);
+  const recordEventRef = useRef<RecordEvent | undefined>(recordEvent);
+  useEffect(() => {
+    recordEventRef.current = recordEvent;
+  }, [recordEvent]);
+  const fire: RecordEvent = (kind, sceneId, sceneName, extra) => {
+    recordEventRef.current?.(kind, sceneId, sceneName, extra);
+  };
 
   // Hydrate once.
   useEffect(() => {
@@ -246,6 +268,11 @@ export const useWorkspace = (
       };
       stateRef.current = next;
       saveWorkspaceDebounced(next);
+      // Only record an 'edited' event when there's actual element content,
+      // and let useActivity coalesce repeated edits.
+      if (elements.length > 0) {
+        fire("edited", updated.id, updated.name);
+      }
     },
     [],
   );
@@ -362,6 +389,7 @@ export const useWorkspace = (
       };
       commit(next);
       swapEditorTo(scene);
+      fire("created", scene.id, scene.name);
       return scene.id;
     },
     [commit, swapEditorTo],
@@ -378,6 +406,9 @@ export const useWorkspace = (
         return;
       }
       const trimmed = name.trim() || scene.name;
+      if (trimmed === scene.name) {
+        return;
+      }
       commit({
         ...current,
         scenes: {
@@ -385,6 +416,7 @@ export const useWorkspace = (
           [id]: { ...scene, name: trimmed, updatedAt: Date.now() },
         },
       });
+      fire("renamed", id, trimmed, { oldName: scene.name, newName: trimmed });
     },
     [commit],
   );
@@ -397,6 +429,7 @@ export const useWorkspace = (
       }
       const scene = current.scenes[id];
       const deleted: WorkspaceScene = { ...scene, deletedAt: Date.now() };
+      fire("deleted", id, scene.name);
       const openTabs = current.openTabs.filter((t) => t !== id);
       let activeTab = current.activeTab;
       if (activeTab === id) {
@@ -458,6 +491,7 @@ export const useWorkspace = (
         ...current,
         scenes: { ...current.scenes, [id]: rest as WorkspaceScene },
       });
+      fire("restored", id, scene.name);
     },
     [commit],
   );
@@ -506,6 +540,7 @@ export const useWorkspace = (
         activeTab: copy.id,
       });
       swapEditorTo(copy);
+      fire("duplicated", copy.id, copy.name);
       return copy.id;
     },
     [commit, swapEditorTo],
@@ -551,6 +586,7 @@ export const useWorkspace = (
           [id]: { ...scene, folderId, updatedAt: Date.now() },
         },
       });
+      fire("moved", id, scene.name, { toFolderId: folderId });
     },
     [commit],
   );
