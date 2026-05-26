@@ -946,9 +946,9 @@ const ExcalidrawWrapper = () => {
             navigate={navigate}
             onOpenSearch={() => setSearchOpen(true)}
             events={activity.events}
-            isDark={appTheme === THEME.DARK}
+            isDark={editorTheme === THEME.DARK}
             onToggleTheme={() =>
-              setAppTheme(appTheme === THEME.DARK ? THEME.LIGHT : THEME.DARK)
+              setAppTheme(editorTheme === THEME.DARK ? THEME.LIGHT : THEME.DARK)
             }
           />
         ) : (
@@ -956,7 +956,7 @@ const ExcalidrawWrapper = () => {
           // shell immediately so the editor never flashes through.
           <div
             className="excalidraw-dashboard"
-            data-theme={appTheme === THEME.DARK ? "dark" : "light"}
+            data-theme={editorTheme === THEME.DARK ? "dark" : "light"}
             aria-busy="true"
           />
         ))}

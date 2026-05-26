@@ -11,14 +11,18 @@ const getDarkThemeMediaQuery = (): MediaQueryList | undefined =>
 
 export const useHandleAppTheme = () => {
   const [appTheme, setAppTheme] = useState<Theme | "system">(() => {
+    // Default to 'system' so first-visit follows the user's OS preference.
+    // (Upstream Excalidraw defaults to LIGHT; we prefer to honour the OS.)
     return (
       (localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_THEME) as
         | Theme
         | "system"
-        | null) || THEME.LIGHT
+        | null) || "system"
     );
   });
-  const [editorTheme, setEditorTheme] = useState<Theme>(THEME.LIGHT);
+  const [editorTheme, setEditorTheme] = useState<Theme>(() =>
+    getDarkThemeMediaQuery()?.matches ? THEME.DARK : THEME.LIGHT,
+  );
 
   useEffect(() => {
     const mediaQuery = getDarkThemeMediaQuery();
