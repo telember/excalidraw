@@ -938,19 +938,28 @@ const ExcalidrawWrapper = () => {
         "is-collaborating": isCollaborating,
       })}
     >
-      {workspace && route.kind !== "editor" && (
-        <Dashboard
-          workspace={workspace}
-          route={route}
-          navigate={navigate}
-          onOpenSearch={() => setSearchOpen(true)}
-          events={activity.events}
-          isDark={appTheme === THEME.DARK}
-          onToggleTheme={() =>
-            setAppTheme(appTheme === THEME.DARK ? THEME.LIGHT : THEME.DARK)
-          }
-        />
-      )}
+      {route.kind !== "editor" &&
+        (workspace ? (
+          <Dashboard
+            workspace={workspace}
+            route={route}
+            navigate={navigate}
+            onOpenSearch={() => setSearchOpen(true)}
+            events={activity.events}
+            isDark={appTheme === THEME.DARK}
+            onToggleTheme={() =>
+              setAppTheme(appTheme === THEME.DARK ? THEME.LIGHT : THEME.DARK)
+            }
+          />
+        ) : (
+          // Workspace store is still hydrating from IDB. Render the dashboard
+          // shell immediately so the editor never flashes through.
+          <div
+            className="excalidraw-dashboard"
+            data-theme={appTheme === THEME.DARK ? "dark" : "light"}
+            aria-busy="true"
+          />
+        ))}
       {workspace && (
         <QuickSearch
           open={searchOpen}
