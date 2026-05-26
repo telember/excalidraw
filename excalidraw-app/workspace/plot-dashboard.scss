@@ -380,6 +380,9 @@
   font-size: 22px;
   font-weight: 600;
   letter-spacing: -0.015em;
+  // Defensive: force the inherited ink color so Excalidraw's global h1
+  // rules can't override us in either theme.
+  color: var(--pl-ink);
 }
 .pl-main-title-ico {
   color: var(--pl-accent);
@@ -655,6 +658,7 @@
   font-size: 14.5px;
   font-weight: 600;
   letter-spacing: -0.005em;
+  color: var(--pl-ink);
 }
 .pl-ra-list {
   display: flex;
