@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import clsx from "clsx";
 
@@ -168,6 +168,49 @@ const IcoOpen = (p: IconProps) => (
   </SvgWrap>
 );
 
+// --- Sidebar inline-rename row ----------------------------------------------
+const SidebarInlineRename = ({
+  initial,
+  onCommit,
+  onCancel,
+}: {
+  initial: string;
+  onCommit: (v: string) => void;
+  onCancel: () => void;
+}) => {
+  const ref = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    ref.current?.focus();
+    ref.current?.select();
+  }, []);
+  return (
+    <div className="pl-sb-nav-item is-small" style={{ gap: 8 }}>
+      <span className="pl-sb-nav-icon">
+        <IcoFolder size={14} />
+      </span>
+      <input
+        ref={ref}
+        defaultValue={initial}
+        className="excalidraw-workspace-edit-input"
+        style={{ flex: 1, height: 22 }}
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            onCommit(ref.current?.value ?? initial);
+          } else if (e.key === "Escape") {
+            e.preventDefault();
+            onCancel();
+          }
+          e.stopPropagation();
+        }}
+        onBlur={() => onCommit(ref.current?.value ?? initial)}
+        aria-label="Rename collection"
+      />
+    </div>
+  );
+};
+
 // --- Card --------------------------------------------------------------------
 const SceneCard = ({
   scene,
@@ -298,6 +341,7 @@ export const Dashboard = ({
 }: Props) => {
   const [collOpen, setCollOpen] = useState(true);
   const [accountOpen, setAccountOpen] = useState(false);
+  const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
 
   const allScenes = useMemo(
     () => Object.values(workspace.state.scenes),
@@ -469,6 +513,7 @@ export const Dashboard = ({
               const id = workspace.createFolder("New collection");
               if (id) {
                 navigate({ kind: "collection", id });
+                setEditingFolderId(id);
               }
             }}
           >
@@ -494,6 +539,19 @@ export const Dashboard = ({
               const count = activeScenes.filter(
                 (s) => s.folderId === f.id,
               ).length;
+              if (editingFolderId === f.id) {
+                return (
+                  <SidebarInlineRename
+                    key={f.id}
+                    initial={f.name}
+                    onCommit={(v) => {
+                      workspace.renameFolder(f.id, v);
+                      setEditingFolderId(null);
+                    }}
+                    onCancel={() => setEditingFolderId(null)}
+                  />
+                );
+              }
               return (
                 <NavItem
                   key={f.id}
