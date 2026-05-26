@@ -63,7 +63,12 @@ export const useActivity = (): ActivityAPI => {
       }
       const now = Date.now();
       const list = ref.current;
-      // Coalesce 'edited' for the same scene inside the window.
+      // Coalesce 'edited' for the same scene inside the window. We update the
+      // ref + persist (so the timestamp advances), but skip setState — calling
+      // setState here would re-render the whole tree on every drawing tick
+      // (onChange fires many times per second), which can trigger React's
+      // max-update-depth guard. The activity rail will reflect the new ts on
+      // the next non-coalesced event (or on remount).
       if (kind === "edited") {
         const last = list[0];
         if (
@@ -75,7 +80,6 @@ export const useActivity = (): ActivityAPI => {
           const updated = { ...last, ts: now, sceneName };
           const next = [updated, ...list.slice(1)];
           ref.current = next;
-          setEvents(next);
           ActivityStorage.save(next);
           return;
         }
