@@ -225,28 +225,42 @@ const SceneCard = ({
 }) => {
   const [hover, setHover] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  // Whole card is clickable — clicking thumb, title, or anywhere else opens
+  // the scene. Action buttons / menu still work via stopPropagation.
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Ignore clicks that bubbled from the actions area or menu.
+    if ((e.target as HTMLElement).closest(".pl-card-actions, .pl-card-menu")) {
+      return;
+    }
+    onOpen();
+  };
   return (
     <div
       className="pl-card"
+      role="button"
+      tabIndex={0}
+      onClick={handleCardClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onOpen();
+        }
+      }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => {
         setHover(false);
         setMenuOpen(false);
       }}
+      aria-label={`Open ${scene.name}`}
     >
-      <button
-        type="button"
-        className="pl-card-thumb"
-        onClick={onOpen}
-        aria-label={`Open ${scene.name}`}
-      >
+      <div className="pl-card-thumb">
         {thumbUrl ? (
           <img src={thumbUrl} alt="" loading="lazy" />
         ) : (
           <div className="pl-card-thumb-placeholder">📄</div>
         )}
         <div className="pl-card-ago">{relativeShort(scene.updatedAt)}</div>
-      </button>
+      </div>
       <div
         className={clsx("pl-card-actions", { "is-on": hover })}
         onClick={(e) => e.stopPropagation()}

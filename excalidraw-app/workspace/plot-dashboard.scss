@@ -474,6 +474,14 @@
   flex-direction: column;
   gap: 10px;
   position: relative;
+  cursor: pointer;
+  outline: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--pl-accent);
+    outline-offset: 4px;
+    border-radius: var(--pl-radius-md);
+  }
 }
 .pl-card-thumb {
   position: relative;
@@ -482,7 +490,6 @@
   overflow: hidden;
   border: 1px solid var(--pl-border);
   background: var(--pl-thumb-bg);
-  cursor: pointer;
   transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
   width: 100%;
   padding: 0;
