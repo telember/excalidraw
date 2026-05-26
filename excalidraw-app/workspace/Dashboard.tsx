@@ -425,6 +425,8 @@ export const Dashboard = ({
     count,
     small,
     onClick,
+    onDoubleClick,
+    title,
   }: {
     icon: React.ReactNode;
     label: string;
@@ -432,6 +434,8 @@ export const Dashboard = ({
     count?: number;
     small?: boolean;
     onClick: () => void;
+    onDoubleClick?: () => void;
+    title?: string;
   }) => (
     <button
       type="button"
@@ -440,6 +444,8 @@ export const Dashboard = ({
         "is-small": small,
       })}
       onClick={onClick}
+      onDoubleClick={onDoubleClick}
+      title={title}
     >
       <span className="pl-sb-nav-icon">{icon}</span>
       <span className="pl-sb-nav-label">{label}</span>
@@ -561,6 +567,8 @@ export const Dashboard = ({
                   count={count || undefined}
                   active={activeCollection === f.id}
                   onClick={() => navigate({ kind: "collection", id: f.id })}
+                  onDoubleClick={() => setEditingFolderId(f.id)}
+                  title="Double-click to rename"
                 />
               );
             })}
