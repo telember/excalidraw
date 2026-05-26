@@ -749,9 +749,11 @@
   padding-top: 14vh;
   animation: pl-fade-in 0.12s ease-out;
 }
-.excalidraw-dashboard[data-theme="dark"] .pl-modal-bg,
+.excalidraw-dashboard[data-theme="dark"] .pl-modal-bg {
+  background: rgba(0, 0, 0, 0.55);
+}
 @media (prefers-color-scheme: dark) {
-  .pl-modal-bg {
+  .excalidraw-dashboard:not([data-theme="light"]) .pl-modal-bg {
     background: rgba(0, 0, 0, 0.55);
   }
 }
